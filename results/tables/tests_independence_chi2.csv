@@ -1,7 +1,7 @@
-,Variable 1,Variable 2,Chi2,p-value,ddl,Liaison
-0,loc,block,0.0,1.0000e+00,2,Faible
-1,loc,tree,0.0,1.0000e+00,4,Faible
-2,loc,family,0.0,1.0000e+00,5,Faible
-3,block,tree,0.0,1.0000e+00,8,Faible
-4,block,family,0.0,1.0000e+00,10,Faible
-5,tree,family,0.0,1.0000e+00,20,Faible
+Variable 1,Variable 2,Chi2,p-value,ddl,Liaison
+gender,treatment,49.64,1.6654e-11,2,Forte
+gender,grade,1.86,3.9376e-01,2,Faible
+gender,arrangement,226.7,5.9360e-50,2,Forte
+treatment,grade,0.12,7.3254e-01,1,Faible
+treatment,arrangement,0.8,3.7101e-01,1,Faible
+grade,arrangement,0.49,4.8525e-01,1,Faible

@@ -40,7 +40,8 @@ def load_and_explore_data(filepath):
     print(df.describe(include='all'))
     
     print("\n❓ Valeurs manquantes :")
-    print(df.isnull().sum())
+    missing = df.isnull().sum()
+    print(missing[missing > 0] if missing.sum() > 0 else "Aucune valeur manquante")
     
     return df
 
@@ -58,12 +59,13 @@ def plot_categorical_distributions(df, cat_vars, save_dir="results/figures"):
         Répertoire de sauvegarde
     """
     n_vars = len(cat_vars)
-    fig, axes = plt.subplots(2, 2, figsize=(15, 10))
+    n_rows = (n_vars + 1) // 2
+    fig, axes = plt.subplots(n_rows, 2, figsize=(15, 5*n_rows))
     axes = axes.ravel()
     
     for idx, var in enumerate(cat_vars):
-        counts = df[var].value_counts()
-        axes[idx].bar(range(len(counts)), counts.values, color='steelblue', alpha=0.7)
+        counts = df[var].value_counts().sort_index()
+        axes[idx].bar(range(len(counts)), counts.values, color='steelblue', alpha=0.7, edgecolor='black')
         axes[idx].set_xlabel(var, fontsize=12, fontweight='bold')
         axes[idx].set_ylabel('Fréquence', fontsize=12)
         axes[idx].set_title(f'Distribution de {var}', fontsize=14, fontweight='bold')
@@ -73,45 +75,56 @@ def plot_categorical_distributions(df, cat_vars, save_dir="results/figures"):
         
         # Ajouter les effectifs
         for i, v in enumerate(counts.values):
-            axes[idx].text(i, v + 0.5, str(v), ha='center', va='bottom')
+            axes[idx].text(i, v + max(counts.values)*0.01, str(v), ha='center', va='bottom', fontsize=10)
+    
+    # Masquer les axes inutilisés
+    for idx in range(n_vars, len(axes)):
+        axes[idx].axis('off')
     
     plt.tight_layout()
     plt.savefig(f"{save_dir}/distributions_variables_qualitatives.png", dpi=300, bbox_inches='tight')
     plt.close()
     print(f"✅ Graphique sauvegardé : distributions_variables_qualitatives.png")
 
-def plot_height_distribution(df, save_dir="results/figures"):
+def plot_quantitative_distributions(df, quant_vars, save_dir="results/figures"):
     """
-    Visualise la distribution de la variable height
+    Visualise la distribution des variables quantitatives
     
     Parameters:
     -----------
     df : pd.DataFrame
         Dataset
+    quant_vars : list
+        Liste des variables quantitatives
     save_dir : str
         Répertoire de sauvegarde
     """
-    fig, axes = plt.subplots(1, 2, figsize=(15, 5))
+    n_vars = len(quant_vars)
+    fig, axes = plt.subplots(n_vars, 2, figsize=(15, 5*n_vars))
     
-    # Histogramme
-    axes[0].hist(df['height'], bins=30, color='coral', alpha=0.7, edgecolor='black')
-    axes[0].set_xlabel('Hauteur (height)', fontsize=12, fontweight='bold')
-    axes[0].set_ylabel('Fréquence', fontsize=12)
-    axes[0].set_title('Distribution de la hauteur', fontsize=14, fontweight='bold')
-    axes[0].grid(axis='y', alpha=0.3)
+    if n_vars == 1:
+        axes = axes.reshape(1, -1)
     
-    # Boxplot
-    axes[1].boxplot(df['height'], vert=True, patch_artist=True,
-                     boxprops=dict(facecolor='lightblue', alpha=0.7),
-                     medianprops=dict(color='red', linewidth=2))
-    axes[1].set_ylabel('Hauteur (height)', fontsize=12, fontweight='bold')
-    axes[1].set_title('Boxplot de la hauteur', fontsize=14, fontweight='bold')
-    axes[1].grid(axis='y', alpha=0.3)
+    for idx, var in enumerate(quant_vars):
+        # Histogramme
+        axes[idx, 0].hist(df[var].dropna(), bins=30, color='coral', alpha=0.7, edgecolor='black')
+        axes[idx, 0].set_xlabel(var, fontsize=12, fontweight='bold')
+        axes[idx, 0].set_ylabel('Fréquence', fontsize=12)
+        axes[idx, 0].set_title(f'Distribution de {var}', fontsize=14, fontweight='bold')
+        axes[idx, 0].grid(axis='y', alpha=0.3)
+        
+        # Boxplot
+        axes[idx, 1].boxplot(df[var].dropna(), vert=True, patch_artist=True,
+                         boxprops=dict(facecolor='lightblue', alpha=0.7),
+                         medianprops=dict(color='red', linewidth=2))
+        axes[idx, 1].set_ylabel(var, fontsize=12, fontweight='bold')
+        axes[idx, 1].set_title(f'Boxplot de {var}', fontsize=14, fontweight='bold')
+        axes[idx, 1].grid(axis='y', alpha=0.3)
     
     plt.tight_layout()
-    plt.savefig(f"{save_dir}/distribution_height.png", dpi=300, bbox_inches='tight')
+    plt.savefig(f"{save_dir}/distributions_variables_quantitatives.png", dpi=300, bbox_inches='tight')
     plt.close()
-    print(f"✅ Graphique sauvegardé : distribution_height.png")
+    print(f"✅ Graphique sauvegardé : distributions_variables_quantitatives.png")
 
 def save_table(df, filename, title):
     """
@@ -127,7 +140,7 @@ def save_table(df, filename, title):
         Titre à afficher
     """
     filepath = f"results/tables/{filename}"
-    df.to_csv(filepath)
+    df.to_csv(filepath, index=False)
     print(f"\n{'=' * 80}")
     print(f"📊 {title}")
     print(f"{'=' * 80}")
