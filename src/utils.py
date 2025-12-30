@@ -26,20 +26,20 @@ def load_and_explore_data(filepath):
     df = pd.read_csv(filepath)
     
     print("=" * 80)
-    print("📊 EXPLORATION DU DATASET")
+    print("EXPLORATION DU DATASET")
     print("=" * 80)
-    print(f"\n🔢 Dimensions : {df.shape[0]} individus × {df.shape[1]} variables\n")
+    print(f"\nDimensions : {df.shape[0]} individus × {df.shape[1]} variables\n")
     
-    print("📋 Aperçu des données :")
+    print("Aperçu des données :")
     print(df.head(10))
     
-    print("\n📊 Types de variables :")
+    print("\nTypes de variables :")
     print(df.dtypes)
     
-    print("\n📈 Statistiques descriptives :")
+    print("\nStatistiques descriptives :")
     print(df.describe(include='all'))
     
-    print("\n❓ Valeurs manquantes :")
+    print("\nValeurs manquantes :")
     missing = df.isnull().sum()
     print(missing[missing > 0] if missing.sum() > 0 else "Aucune valeur manquante")
     
@@ -84,7 +84,7 @@ def plot_categorical_distributions(df, cat_vars, save_dir="results/figures"):
     plt.tight_layout()
     plt.savefig(f"{save_dir}/distributions_variables_qualitatives.png", dpi=300, bbox_inches='tight')
     plt.close()
-    print(f"✅ Graphique sauvegardé : distributions_variables_qualitatives.png")
+    print(f"Graphique sauvegardé : distributions_variables_qualitatives.png")
 
 def plot_quantitative_distributions(df, quant_vars, save_dir="results/figures"):
     """
@@ -124,7 +124,7 @@ def plot_quantitative_distributions(df, quant_vars, save_dir="results/figures"):
     plt.tight_layout()
     plt.savefig(f"{save_dir}/distributions_variables_quantitatives.png", dpi=300, bbox_inches='tight')
     plt.close()
-    print(f"✅ Graphique sauvegardé : distributions_variables_quantitatives.png")
+    print(f"Graphique sauvegardé : distributions_variables_quantitatives.png")
 
 def save_table(df, filename, title):
     """
@@ -142,7 +142,7 @@ def save_table(df, filename, title):
     filepath = f"results/tables/{filename}"
     df.to_csv(filepath, index=False)
     print(f"\n{'=' * 80}")
-    print(f"📊 {title}")
+    print(f"{title}")
     print(f"{'=' * 80}")
     print(df.to_string())
-    print(f"\n✅ Tableau sauvegardé : {filename}")
+    print(f"\nTableau sauvegardé : {filename}")
